@@ -12,6 +12,7 @@ const dbTimeout = 5 * time.Second
 type Models struct {
 	Users User
 	Albums Album
+	Posts Post
 	JsonResponse JsonResponseModel
 }
 
