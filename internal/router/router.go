@@ -31,16 +31,20 @@ func Routes() http.Handler{
         r.Get("/", controllers.GetAllUsers)                   // GET /api/v1/users
         r.Post("/create", controllers.CreateUser) 
         r.Route("/{id}", func(r chi.Router) {
+            r.Get("/albums", controllers.GetAlbumsByUserID)  
+            r.Get("/posts", controllers.GetPostsByUserID) 
+            r.Delete("/albums/{album_id}", controllers.RemoveAlbumFromUser)
             r.Get("/", controllers.GetUserByID)  
             r.Put("/", controllers.UpdateUser)          
-            r.Delete("/", controllers.DeleteUser)     
+            r.Delete("/", controllers.DeleteUser)
         })
     })
-
+    
     // Album routes
     router.Route("/api/v1/albums", func(r chi.Router) {
         r.Get("/", controllers.GetAllAlbums)                 
         r.Post("/create", controllers.CreateAlbum)            
+        r.Post("/save", controllers.AddAlbumToUser)
         r.Route("/{id}", func(r chi.Router) {
             r.Get("/", controllers.GetAlbumByID)             
             r.Put("/", controllers.UpdateAlbum)              
@@ -49,11 +53,21 @@ func Routes() http.Handler{
         })
     })
 
-    // User Albums routes
-    router.Route("/api/v1/{user_id}/albums", func(r chi.Router) {
-        r.Get("/", controllers.GetAlbumsByUserID)  
-        r.Delete("/{album_id}", controllers.RemoveAlbumFromUser) 
+    // Post routes
+    router.Route("/api/v1/posts", func(r chi.Router) {
+        r.Get("/", controllers.GetAllPosts)                 
+        r.Post("/create", controllers.CreatePost)            
+        r.Route("/{id}", func(r chi.Router) {
+            r.Get("/", controllers.GetPostByID)             
+            r.Put("/", controllers.UpdatePost)              
+            r.Delete("/", controllers.DeletePost)        
+        
+        })
     })
+
+    // User Albums routes
+   
+    
     // Add the route that serves the Swagger UI
 
     return router
