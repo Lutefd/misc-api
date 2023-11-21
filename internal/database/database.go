@@ -1,53 +1,48 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/jackc/pgconn"
+	_ "github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/lib/pq"
 )
-
-type Service interface {
-	Health() map[string]string
+type DB struct {
+	DB *sql.DB
 }
 
-type service struct {
-	db *sql.DB
-}
+var dbConn = &DB{}
 
-var (
-	database = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	username = os.Getenv("DB_USERNAME")
-	port     = os.Getenv("DB_PORT")
-	host     = os.Getenv("DB_HOST")
-)
+const maxOpenConns = 10
+const maxIdleConns = 5
+const maxDbLifeTime = 5 * time.Minute
 
-func New() Service {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
-	db, err := sql.Open("postgres", connStr)
+func ConnectPostgresDB(dsn string) (*DB, error){
+	d, err := sql.Open("pgx", dsn)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	s := &service{db: db}
-	return s
+	d.SetMaxOpenConns(maxOpenConns)
+	d.SetMaxIdleConns(maxIdleConns)
+	d.SetConnMaxLifetime(maxDbLifeTime)
+
+	err = testDB(d)
+	if err != nil {
+		return nil, err
+	}
+	dbConn.DB = d
+	return dbConn, nil
 }
 
-func (s *service) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	err := s.db.PingContext(ctx)
+func testDB( d *sql.DB) error {
+	err := d.Ping()
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		fmt.Println("Error pinging database", err)
+		return err
 	}
-
-	return map[string]string{
-		"message": "It's healthy",
-	}
+	fmt.Println("*** Pinged database successfully ***")
+	return nil
 }

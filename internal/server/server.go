@@ -2,35 +2,36 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
-	"strconv"
-	"time"
 
-	"challenge-api/internal/database"
-	_ "github.com/joho/godotenv/autoload"
+	"challenge-api/internal/router"
+	"challenge-api/internal/services"
+
+	"github.com/joho/godotenv"
 )
 
-type Server struct {
-	port int
-	db   database.Service
+type Config struct {
+	Port string
 }
 
-func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	NewServer := &Server{
-		port: port,
-		db:   database.New(),
-	}
+type Application struct {
+	Config Config
+	Models services.Models
+}
 
-	// Declare Server config
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", NewServer.port),
-		Handler:      NewServer.RegisterRoutes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+func (app *Application) Serve() error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
-
-	return server
+	port := os.Getenv("PORT")
+	fmt.Println("API is running on port ",  port)
+	srv := &http.Server{
+		Addr: fmt.Sprintf(":%s", port),
+		Handler: router.Routes(),
+		
+	}
+	return srv.ListenAndServe()
 }
