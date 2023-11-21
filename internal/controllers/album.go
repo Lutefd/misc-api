@@ -78,7 +78,7 @@ func DeleteAlbum(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAlbumsByUserID(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "user_id")
+	id := chi.URLParam(r, "id")
 	albums, err := album.GetUserAlbums(id)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println("Error getting user albums: ", err)
@@ -107,7 +107,7 @@ func AddAlbumToUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveAlbumFromUser(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "user_id")
+	userID := chi.URLParam(r, "id")
 	albumID:= chi.URLParam(r, "album_id")
 	err := album.RemoveAlbumFromUser(userID, albumID)
 	if err != nil {
