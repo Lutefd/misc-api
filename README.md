@@ -1,4 +1,4 @@
-# Sensedia Challenge API
+# Misc api
 
 ## Getting Started
 
