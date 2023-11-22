@@ -1,4 +1,4 @@
-# Project challenge-api
+# Sensedia Challenge API
 
 ## Getting Started
 
