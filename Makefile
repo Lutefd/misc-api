@@ -1,6 +1,5 @@
-# Simple Makefile for a Go project
 include .env
-# Build the application
+
 all: build
 
 build:
@@ -38,8 +37,6 @@ watch:
 	    fi; \
 	fi
 
-.PHONY: all build run test clean
-
 run_migrations:
 	@echo "Running migrations..."
 	sqlx migrate run --database-url "postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}?sslmode=disable"
@@ -47,3 +44,10 @@ run_migrations:
 rollback_migrations:
 	@echo "Rolling back migrations..."
 	sqlx migrate revert --database-url "postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}?sslmode=disable"
+
+populate_db:
+	@echo "Populating database...":
+	@python3 ./tooling/populateDB.py
+
+.PHONY: all build run test clean watch run_migrations rollback_migrations populate_db
+
