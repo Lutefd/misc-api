@@ -4,12 +4,18 @@ import (
 	"challenge-api/internal/controllers"
 	"net/http"
 
+	_ "challenge-api/docs"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-
+// @title Sensedia Challenge API
+// @version 1
+// @description This is the API for the Sensedia Challenge
+// @BasePath /api/v1
 func Routes() http.Handler{
     router := chi.NewRouter()
     router.Use(middleware.Recoverer)
@@ -28,7 +34,7 @@ func Routes() http.Handler{
 
     // User routes
     router.Route("/api/v1/users", func(r chi.Router) {
-        r.Get("/", controllers.GetAllUsers)                   // GET /api/v1/users
+        r.Get("/", controllers.GetAllUsers)                  
         r.Post("/create", controllers.CreateUser) 
         r.Route("/{id}", func(r chi.Router) {
             r.Get("/albums", controllers.GetAlbumsByUserID)  
@@ -63,12 +69,13 @@ func Routes() http.Handler{
             r.Delete("/", controllers.DeletePost)        
         
         })
+    // Swagger route
+    router.Route(("/swagger"), func(r chi.Router) {
+        r.Get("/*", httpSwagger.WrapHandler)
+
+    })
     })
 
-    // User Albums routes
-   
-    
-    // Add the route that serves the Swagger UI
-
+ 
     return router
 }
