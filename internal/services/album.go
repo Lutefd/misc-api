@@ -12,6 +12,12 @@ type Album struct {
 	CreatedAt 	time.Time `json:"created_at"`
 	UpdatedAt 	time.Time `json:"updated_at"`
 }
+
+type AlbumPayload struct {
+	Title  		string `json:"title"`
+	Description string `json:"description"`
+}
+
 type AlbumsList struct {
 	Albums []Album `json:"albums"`
 }
@@ -19,6 +25,15 @@ type UserAlbum struct {
 	UserID string `json:"user_id"`
 	AlbumID string `json:"album_id"`
 	AddedAt time.Time `json:"added_at"`
+}
+
+type UserAlbumPayload struct {
+	UserID string `json:"user_id"`
+	AlbumID string `json:"album_id"`
+}
+
+type UserAlbumsList struct {
+	UserAlbums []UserAlbum `json:"user_albums"`
 }
 
 func (a *Album) GetAllAlbums() ([]*Album, error) {

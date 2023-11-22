@@ -13,6 +13,11 @@ type Post struct {
 	UpdatedAt 	time.Time `json:"updated_at"`
 }
 
+type PostPayload struct {
+	UserID 		string `json:"user_id"`
+	Content		string `json:"content"`
+}
+
 type PostsList struct {
 	Posts []Post `json:"posts"`
 }
